@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	upfpb "github.com/5g-core/proto/upf"
 	"google.golang.org/grpc"
@@ -27,7 +28,8 @@ func main() {
 		log.Fatalf("UPF 监听失败: %v", err)
 	}
 	server := grpc.NewServer()
-	upfpb.RegisterUPFServiceServer(server, NewUPFHandler())
+	handler := NewUPFHandler()
+	upfpb.RegisterUPFServiceServer(server, handler)
 	hs := health.NewServer()
 	hs.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
 	healthpb.RegisterHealthServer(server, hs)
@@ -41,5 +43,20 @@ func main() {
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 	<-stop
 	hs.SetServingStatus("", healthpb.HealthCheckResponse_NOT_SERVING)
-	server.GracefulStop()
+	stopped := make(chan struct{})
+	go func() {
+		server.GracefulStop()
+		close(stopped)
+	}()
+
+	timer := time.NewTimer(5 * time.Second)
+	defer timer.Stop()
+	select {
+	case <-stopped:
+	case <-timer.C:
+		log.Printf("UPF 优雅退出超过 5 秒，强制停止")
+		server.Stop()
+		<-stopped
+	}
+	handler.Close()
 }

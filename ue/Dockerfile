@@ -1,4 +1,5 @@
 FROM golang:1.25-alpine AS builder
+ENV GOPROXY=https://goproxy.cn,direct
 WORKDIR /src
 COPY go.work go.work.sum ./
 COPY proto ./proto

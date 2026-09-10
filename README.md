@@ -55,6 +55,23 @@ docker compose down
 
 系统没有数据库或Docker volume，停止后内存状态会清空。
 
+## 网页实验台
+
+`gateway/` 是一个薄 HTTP 网关（:8080），把后端 gRPC 能力翻译成 JSON API，业务逻辑全部留在 AMF/SMF/UPF。`frontend-live/` 是连接它的网页前端（:5173），支持实时注册演示、在线终端与包计数、健康面板，网关不可达时自动降级为演示模式。
+
+```bash
+# 方式一：后端跑在 Docker 里（gateway 容器也在编排内，宿主机不用再起网关）
+docker compose up -d --build
+cd frontend-live && npm install && npm run dev
+
+# 方式二：全部本地跑（四个终端）
+go run ./upf && go run ./smf && go run ./amf
+go run ./gateway
+cd frontend-live && npm install && npm run dev
+```
+
+浏览器打开 http://localhost:5173。API 说明见 [frontend-live/README.md](frontend-live/README.md)。
+
 ## 本地开发
 
 分别打开三个终端：
@@ -115,13 +132,15 @@ kubectl port-forward service/amf 50051:50051
 ## 目录
 
 ```text
-proto/   gRPC接口定义和生成代码
-amf/     接入控制、UE状态、SMF调用
-smf/     会话、IP池、UPF调用
-upf/     转发规则和模拟包统计
-ue/      单UE客户端、信道模型、并发压测器
-k8s/     Deployment、Service和健康探针
-docs/    架构、实验与交接文档
+proto/         gRPC接口定义和生成代码
+amf/           接入控制、UE状态、SMF调用
+smf/           会话、IP池、UPF调用
+upf/           转发规则和模拟包统计
+ue/            单UE客户端、信道模型、并发压测器
+gateway/       HTTP JSON 网关（:8080），供网页前端调用
+frontend-live/ 实时网页实验台（Vite + React + TS，:5173）
+k8s/           Deployment、Service和健康探针
+docs/          架构、实验与交接文档
 ```
 
 ## 项目边界与后续工作

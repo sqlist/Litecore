@@ -47,5 +47,20 @@ func main() {
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 	<-stop
 	hs.SetServingStatus("", healthpb.HealthCheckResponse_NOT_SERVING)
-	server.GracefulStop()
+	stopGRPCServer(server, 5*time.Second)
+}
+
+func stopGRPCServer(server *grpc.Server, timeout time.Duration) {
+	done := make(chan struct{})
+	go func() {
+		server.GracefulStop()
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-time.After(timeout):
+		log.Printf("优雅退出超过 %s，强制停止", timeout)
+		server.Stop()
+		<-done
+	}
 }

@@ -42,6 +42,7 @@ message GetStatsResponse {
   bool   active         = 4;
   string session_id     = 5;
   string ue_id          = 6;
+  bool   found          = 7;
 }
 
 service UPFService {

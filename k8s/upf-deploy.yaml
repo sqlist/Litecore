@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata: {name: upf, labels: {app: upf}}
 spec:
+  # 转发规则和计数保存在内存中；多副本会让创建、查询和删除落到不同状态副本。
   replicas: 1
   selector: {matchLabels: {app: upf}}
   template:

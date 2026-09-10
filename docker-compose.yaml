@@ -51,6 +51,26 @@ services:
       retries: 10
     restart: unless-stopped
 
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    image: litecore-gateway:latest
+    environment:
+      AMF_ADDRESS: amf:50051
+      SMF_ADDRESS: smf:50052
+      UPF_ADDRESS: upf:50053
+    ports: ["8080:8080"]
+    depends_on:
+      amf:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "8080"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+    restart: unless-stopped
+
   ue:
     profiles: ["tools"]
     build:

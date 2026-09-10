@@ -1,4 +1,4 @@
-.PHONY: generate format test race build up down demo benchmark k8s-apply
+.PHONY: generate format test race build up down demo benchmark k8s-apply gateway web
 
 generate:
 	cd proto && protoc --go_out=. --go_opt=module=github.com/5g-core/proto --go-grpc_out=. --go-grpc_opt=module=github.com/5g-core/proto amf.proto smf.proto upf.proto
@@ -30,3 +30,11 @@ benchmark:
 
 k8s-apply:
 	kubectl apply -f k8s/
+
+# 前端网关（HTTP JSON API，端口 8080），依赖 amf/smf/upf 已启动
+gateway:
+	go run ./gateway
+
+# 实时前端（Vite 开发服务器，端口 5173），依赖 gateway 已启动
+web:
+	cd frontend-live && npm run dev

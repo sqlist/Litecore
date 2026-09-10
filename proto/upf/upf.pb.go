@@ -316,6 +316,7 @@ type GetStatsResponse struct {
 	Active           bool                   `protobuf:"varint,4,opt,name=active,proto3" json:"active,omitempty"`
 	SessionId        string                 `protobuf:"bytes,5,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	UeId             string                 `protobuf:"bytes,6,opt,name=ue_id,json=ueId,proto3" json:"ue_id,omitempty"`
+	Found            bool                   `protobuf:"varint,7,opt,name=found,proto3" json:"found,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -392,6 +393,13 @@ func (x *GetStatsResponse) GetUeId() string {
 	return ""
 }
 
+func (x *GetStatsResponse) GetFound() bool {
+	if x != nil {
+		return x.Found
+	}
+	return false
+}
+
 var File_upf_proto protoreflect.FileDescriptor
 
 const file_upf_proto_rawDesc = "" +
@@ -417,7 +425,7 @@ const file_upf_proto_rawDesc = "" +
 	"\x0fGetStatsRequest\x12\x17\n" +
 	"\arule_id\x18\x01 \x01(\tR\x06ruleId\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x02 \x01(\tR\tsessionId\"\xb9\x01\n" +
+	"session_id\x18\x02 \x01(\tR\tsessionId\"\xcf\x01\n" +
 	"\x10GetStatsResponse\x12\x17\n" +
 	"\arule_id\x18\x01 \x01(\tR\x06ruleId\x12\x13\n" +
 	"\x05ue_ip\x18\x02 \x01(\tR\x04ueIp\x12+\n" +
@@ -425,7 +433,8 @@ const file_upf_proto_rawDesc = "" +
 	"\x06active\x18\x04 \x01(\bR\x06active\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x05 \x01(\tR\tsessionId\x12\x13\n" +
-	"\x05ue_id\x18\x06 \x01(\tR\x04ueId2\xc3\x01\n" +
+	"\x05ue_id\x18\x06 \x01(\tR\x04ueId\x12\x14\n" +
+	"\x05found\x18\a \x01(\bR\x05found2\xc3\x01\n" +
 	"\n" +
 	"UPFService\x12=\n" +
 	"\n" +
