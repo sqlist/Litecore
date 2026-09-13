@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: gateway, labels: {app: gateway}}
+spec:
+  # 网关本身无状态（UE 记忆在进程内，丢了一刷新即可重建），单副本足够。
+  replicas: 1
+  selector: {matchLabels: {app: gateway}}
+  template:
+    metadata: {labels: {app: gateway}}
+    spec:
+      containers:
+        - name: gateway
+          image: litecore-gateway:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - {name: AMF_ADDRESS, value: "amf:50051"}
+            - {name: SMF_ADDRESS, value: "smf:50052"}
+            - {name: UPF_ADDRESS, value: "upf:50053"}
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe: {tcpSocket: {port: http}, initialDelaySeconds: 2, periodSeconds: 3}
+          livenessProbe: {tcpSocket: {port: http}, initialDelaySeconds: 5, periodSeconds: 5}
+          resources:
+            requests: {cpu: 25m, memory: 32Mi}
+            limits: {cpu: 500m, memory: 128Mi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: gateway}
+spec:
+  selector: {app: gateway}
+  ports: [{name: http, port: 8080, targetPort: http}]

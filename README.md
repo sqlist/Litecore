@@ -146,3 +146,5 @@ docs/          架构、实验与交接文档
 ## 项目边界与后续工作
 
 当前“UPF转发”是软件计数仿真，不是真实网络包转发。可选扩展包括：Redis共享状态、OpenTelemetry链路追踪、Prometheus监控、TUN/TAP或UDP用户面，以及接入导师提供的真实信道模型。任何扩展都不应把本项目描述为完整3GPP核心网。
+
+中期答辩之后的研究路线图（做什么、怎么做、验收曲线）见 [docs/ROADMAP.md](docs/ROADMAP.md)。
